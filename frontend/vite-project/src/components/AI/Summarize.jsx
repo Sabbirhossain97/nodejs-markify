@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 function Summarize() {
     const location = useLocation();
     const data = location.state;
+
     return (
         <div className='min-h-screen max-w-7xl mx-auto flex flex-col pt-20 text-3xl text-zinc-400 w-full'>
             <div className='w-full'>
