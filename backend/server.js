@@ -11,7 +11,7 @@ app.use(cors());
 const generateAIContent = async (prompt) => {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const generateSummary = `Can you summarize the following article also give a summary with bullet points: ${prompt}`;
+    const generateSummary = `Can you summarize the following article: ${prompt}`;
 
     try {
         const result = await model.generateContent(generateSummary);
@@ -192,12 +192,12 @@ const fetchTheDailyObserverHeadlines = async () => {
 };
 
 app.post("/", async (req, res) => {
-    const { newsPaperName } = req.body;
-    switch (newsPaperName) {
+    const { newsName } = req.body;
+    switch (newsName) {
         case 'The Daily Star':
             try {
                 const headlines = await fetchTheDailyStarHeadlines();
-                res.json({ headlines });
+                res.json({ newsPaperName: newsName, headlinesList: headlines });
             } catch (error) {
                 res.status(500).json({ error: error.message });
             }
@@ -205,7 +205,7 @@ app.post("/", async (req, res) => {
         case 'The Independent':
             try {
                 const headlines = await fetchTheIndependentHeadlines();
-                res.json({ headlines });
+                res.json({ newsPaperName: newsName, headlinesList: headlines });
             } catch (error) {
                 res.status(500).json({ error: error.message });
             }
@@ -213,7 +213,7 @@ app.post("/", async (req, res) => {
         case 'Dhaka Tribune':
             try {
                 const headlines = await fetchDhakaTribuneHeadlines();
-                res.json({ headlines });
+                res.json({ newsPaperName: newsName, headlinesList: headlines });
             } catch (error) {
                 res.status(500).json({ error: error.message });
             }
@@ -221,7 +221,7 @@ app.post("/", async (req, res) => {
         case 'The Daily Observer':
             try {
                 const headlines = await fetchTheDailyObserverHeadlines();
-                res.json({ headlines });
+                res.json({ newsPaperName: newsName, headlinesList: headlines });
             } catch (error) {
                 res.status(500).json({ error: error.message });
             }
@@ -229,7 +229,7 @@ app.post("/", async (req, res) => {
         case 'The Daily Sun':
             try {
                 const headlines = await fetchDailySunHeadlines();
-                res.json({ headlines });
+                res.json({ newsPaperName: newsName, headlinesList: headlines });
             } catch (error) {
                 res.status(500).json({ error: error.message });
             }
