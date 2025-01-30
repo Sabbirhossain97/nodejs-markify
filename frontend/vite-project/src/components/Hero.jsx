@@ -10,7 +10,11 @@ import { Tooltip as ReactTooltip } from "react-tooltip";
 
 function Hero() {
     const navigate = useNavigate();
-    const [newsName, setNewsName] = useState('The Daily Star');
+    const [newsName, setNewsName] = useState({
+        name: 'The Daily Star',
+        activeField: '',
+        filterBy: ''
+    });
     const [headlines, setHeadlines] = useState({
         newsPaperName: "",
         list: []
@@ -20,9 +24,10 @@ function Hero() {
 
     useEffect(() => {
         const handleHeadlines = async (newsName) => {
+            const { name, filterBy } = newsName
             setLoading(true)
             try {
-                await axios.post(`${baseUrl}`, { newsName }, {
+                await axios.post(`${baseUrl}`, { name, filterBy }, {
                     headers: {
                         'Content-Type': 'application/json',
                     }
@@ -43,8 +48,6 @@ function Hero() {
         }
 
     }, [newsName])
-
-
 
     const analyzeWithAI = async (newsPaperName, headline, headlineLink) => {
         setAiContentLoading(true)
@@ -70,21 +73,24 @@ function Hero() {
             console.error("Error fetching data:", error);
         } finally {
             setAiContentLoading(false)
-
         }
     }
+
+    useEffect(() => {
+        setNewsName({ ...newsName, activeField: "", filterBy: "" })
+    }, [newsName.name])
 
     return (
         <section className="min-h-screen pt-20 max-w-7xl mx-auto text-lg flex flex-col items-center">
             <TabGroup className='w-full'>
                 <TabList className="flex gap-4 justify-between">
-                    {newspapers.map(({ name }) => (
+                    {newspapers.map((news, index) => (
                         <Tab
-                            key={name}
-                            onClick={() => setNewsName(name)}
+                            key={index}
+                            onClick={() => setNewsName({ ...newsName, name: news.name })}
                             className="rounded-full cursor-pointer transition duration-300 py-2 px-6 text-md font-semibold text-white focus:outline-none data-[selected]:bg-white/10 data-[hover]:bg-white/5 data-[selected]:data-[hover]:bg-white/10 data-[focus]:outline-1 data-[focus]:outline-white"
                         >
-                            {name}
+                            {news.name}
                         </Tab>
                     ))}
                 </TabList>
@@ -100,30 +106,26 @@ function Hero() {
                                 </div> : (
                                     <div className="grid gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 mx-auto">
                                         {headlines && headlines.list && headlines.list.map((item, index) => (
-                                            <div key={index} className="relative col-span-2 lg:col-span-1 group">
+                                            <div key={index} className="col-span-2 lg:col-span-1 group">
                                                 <div
                                                     className="flex py-4 flex-col sm:flex-row rounded-xl overflow-hidden border transition duration-300 group-hover:bg-zinc-900/30 border-zinc-700/60"
                                                 >
-                                                    <div className="flex items-center px-4 py-4 sm:py-0">
-                                                        <div className="flex-1">
-                                                            <div className="block">
-                                                                <div className="flex justify-between">
-                                                                    <h3 className="text-[16px] text-zinc-400">{headlines.newsPaperName}</h3>
-                                                                    <button data-tooltip-id="my-tooltip-1" type="button">
-                                                                        <RiGeminiFill className="text-[#242424] group-hover:text-teal-500 transition duration-300" />
-                                                                    </button>
-                                                                    <ReactTooltip
-                                                                        id="my-tooltip-1"
-                                                                        place="top"
-                                                                        content="Generate Headline Summary with AI"
-                                                                        style={{ backgroundColor: "#3A3A3A", color: "#fff", borderRadius: "12px" }}
-                                                                    />
-                                                                </div>
-                                                                <p className="text-lg mt-4 font-semibold dark:text-gray-200">
-                                                                    {item.headline}
-                                                                </p>
-                                                            </div>
+                                                    <div className="flex flex-col w-full px-4 py-4 sm:py-0">
+                                                        <div className="flex justify-between">
+                                                            <h3 className="text-[16px] whitespace-nowrap text-zinc-400">{headlines.newsPaperName}</h3>
+                                                            <button data-tooltip-id={`my-tooltip-${index}`} type="button" className="cursor-pointer" >
+                                                                <RiGeminiFill className="text-[#242424] group-hover:text-teal-500 transition duration-300" />
+                                                            </button>
+                                                            <ReactTooltip
+                                                                id={`my-tooltip-${index}`}
+                                                                place="top"
+                                                                content="Generate Headline Summary with AI"
+                                                                style={{ backgroundColor: "#3A3A3A", color: "#fff", borderRadius: "12px" }}
+                                                            />
                                                         </div>
+                                                        <p className="text-lg mt-4 font-semibold dark:text-gray-200">
+                                                            {item.headline}
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -136,9 +138,9 @@ function Hero() {
                         <div className="py-20 px-8 flex flex-col ">
                             <h3 className="text-white whitespace-nowrap">Select Category</h3>
                             <ul className="space-y-4 mt-6 text-[16px]">
-                                {newspapers.filter((item) => item.name === newsName)[0].categories.map((category, index) => (
+                                {newspapers.filter((item) => item.name === newsName.name)[0].categories.map((category, index) => (
                                     <li key={index} className="flex items-center gap-3">
-                                        <p className="text-zinc-400 hover:text-teal-500 cursor-pointer transition duration-300 capitalize">{category}</p>
+                                        <button onClick={() => setNewsName({ ...newsName, activeField: category.field, filterBy: category.slug })} className={`${newsName.activeField === category.field ? "text-teal-500" : 'text-zinc-400'} hover:text-teal-500 cursor-pointer transition duration-300 capitalize`}>{category.field}</button>
                                     </li>
                                 ))}
                             </ul>

@@ -21,7 +21,8 @@ const generateAIContent = async (prompt) => {
     }
 }
 
-const fetchTheDailyStarHeadlines = async () => {
+const fetchTheDailyStarHeadlines = async (slug) => {
+    let baseUrl = 'https://www.thedailystar.net/'
     try {
         const browser = await puppeteer.launch({
             headless: true,
@@ -29,7 +30,7 @@ const fetchTheDailyStarHeadlines = async () => {
 
         const page = await browser.newPage();
 
-        await page.goto('https://www.thedailystar.net/news/bangladesh', {
+        await page.goto(`${baseUrl}${slug}`, {
             waitUntil: 'networkidle2',
         });
 
@@ -55,7 +56,10 @@ const fetchTheDailyStarHeadlines = async () => {
     }
 };
 
-const fetchDailySunHeadlines = async () => {
+
+
+const fetchTheIndependentHeadlines = async (slug) => {
+    let baseUrl = slug ? `https://theindependentbd.com/online/${slug}` : `https://theindependentbd.com/online/bangladesh`
     try {
         const browser = await puppeteer.launch({
             headless: true,
@@ -63,41 +67,7 @@ const fetchDailySunHeadlines = async () => {
 
         const page = await browser.newPage();
 
-        await page.goto('https://www.daily-sun.com/online/national', {
-            waitUntil: 'networkidle2',
-        });
-
-        const headlines = await page.evaluate(() => {
-            return Array.from(
-                document.querySelectorAll('a.row.mb-4')
-            ).map((el) => {
-                const headline = el.querySelector('span.col-8 h4')?.textContent.trim();
-                const link = el.getAttribute('href');
-                return {
-                    headline,
-                    link: link ? `https://www.daily-sun.com${link}` : null,
-                };
-            }).filter(item => item.headline && item.link);
-        });
-
-        await browser.close();
-
-        return headlines;
-    } catch (error) {
-        console.error('Error fetching headlines:', error.message);
-        throw new Error('Failed to fetch headlines');
-    }
-};
-
-const fetchTheIndependentHeadlines = async () => {
-    try {
-        const browser = await puppeteer.launch({
-            headless: true,
-        });
-
-        const page = await browser.newPage();
-
-        await page.goto('https://theindependentbd.com/online/bangladesh', {
+        await page.goto(baseUrl, {
             waitUntil: 'networkidle2',
         });
 
@@ -123,7 +93,8 @@ const fetchTheIndependentHeadlines = async () => {
     }
 };
 
-const fetchDhakaTribuneHeadlines = async () => {
+const fetchDhakaTribuneHeadlines = async (slug) => {
+    let url = slug ? `https://www.dhakatribune.com/${slug}` : `https://www.dhakatribune.com/bangladesh`
     try {
         const browser = await puppeteer.launch({
             headless: true,
@@ -131,7 +102,7 @@ const fetchDhakaTribuneHeadlines = async () => {
 
         const page = await browser.newPage();
 
-        await page.goto('https://www.dhakatribune.com/bangladesh', {
+        await page.goto(url, {
             waitUntil: 'networkidle2',
         });
 
@@ -157,7 +128,8 @@ const fetchDhakaTribuneHeadlines = async () => {
     }
 };
 
-const fetchTheDailyObserverHeadlines = async () => {
+const fetchTheDailyObserverHeadlines = async (slug) => {
+    let url = slug ? `https://www.observerbd.com/${slug}` : `https://www.observerbd.com/menu/186`
     try {
         const browser = await puppeteer.launch({
             headless: true,
@@ -165,7 +137,7 @@ const fetchTheDailyObserverHeadlines = async () => {
 
         const page = await browser.newPage();
 
-        await page.goto('https://www.observerbd.com/menu/186', {
+        await page.goto(url, {
             waitUntil: 'networkidle2',
         });
 
@@ -191,45 +163,80 @@ const fetchTheDailyObserverHeadlines = async () => {
     }
 };
 
+const fetchDailySunHeadlines = async (slug) => {
+    let url = slug ? `https://www.daily-sun.com/online/${slug}` : `https://www.daily-sun.com/online/national`
+    try {
+        const browser = await puppeteer.launch({
+            headless: true,
+        });
+
+        const page = await browser.newPage();
+
+        await page.goto(url, {
+            waitUntil: 'networkidle2',
+        });
+
+        const headlines = await page.evaluate(() => {
+            return Array.from(
+                document.querySelectorAll('a.row.mb-4')
+            ).map((el) => {
+                const headline = el.querySelector('span.col-8 h4')?.textContent.trim();
+                const link = el.getAttribute('href');
+                return {
+                    headline,
+                    link: link ? `https://www.daily-sun.com${link}` : null,
+                };
+            }).filter(item => item.headline && item.link);
+        });
+
+        await browser.close();
+
+        return headlines;
+    } catch (error) {
+        console.error('Error fetching headlines:', error.message);
+        throw new Error('Failed to fetch headlines');
+    }
+};
+
 app.post("/", async (req, res) => {
-    const { newsName } = req.body;
-    switch (newsName) {
+    const { name, filterBy } = req.body;
+    switch (name) {
         case 'The Daily Star':
             try {
-                const headlines = await fetchTheDailyStarHeadlines();
-                res.json({ newsPaperName: newsName, headlinesList: headlines });
+                const headlines = await fetchTheDailyStarHeadlines(filterBy);
+                res.json({ newsPaperName: name, headlinesList: headlines });
             } catch (error) {
                 res.status(500).json({ error: error.message });
             }
             break;
         case 'The Independent':
             try {
-                const headlines = await fetchTheIndependentHeadlines();
-                res.json({ newsPaperName: newsName, headlinesList: headlines });
+                const headlines = await fetchTheIndependentHeadlines(filterBy);
+                res.json({ newsPaperName: name, headlinesList: headlines });
             } catch (error) {
                 res.status(500).json({ error: error.message });
             }
             break;
         case 'Dhaka Tribune':
             try {
-                const headlines = await fetchDhakaTribuneHeadlines();
-                res.json({ newsPaperName: newsName, headlinesList: headlines });
+                const headlines = await fetchDhakaTribuneHeadlines(filterBy);
+                res.json({ newsPaperName: name, headlinesList: headlines });
             } catch (error) {
                 res.status(500).json({ error: error.message });
             }
             break;
         case 'The Daily Observer':
             try {
-                const headlines = await fetchTheDailyObserverHeadlines();
-                res.json({ newsPaperName: newsName, headlinesList: headlines });
+                const headlines = await fetchTheDailyObserverHeadlines(filterBy);
+                res.json({ newsPaperName: name, headlinesList: headlines });
             } catch (error) {
                 res.status(500).json({ error: error.message });
             }
             break;
         case 'The Daily Sun':
             try {
-                const headlines = await fetchDailySunHeadlines();
-                res.json({ newsPaperName: newsName, headlinesList: headlines });
+                const headlines = await fetchDailySunHeadlines(filterBy);
+                res.json({ newsPaperName: name, headlinesList: headlines });
             } catch (error) {
                 res.status(500).json({ error: error.message });
             }
