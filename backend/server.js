@@ -11,7 +11,7 @@ app.use(cors());
 const generateAIContent = async (prompt) => {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const generateSummary = `Can you summarize the following article: ${prompt}`;
+    const generateSummary = `Can you Describe the following article in brief: ${prompt}`;
 
     try {
         const result = await model.generateContent(generateSummary);
@@ -22,7 +22,7 @@ const generateAIContent = async (prompt) => {
 }
 
 const fetchTheDailyStarHeadlines = async (slug) => {
-    let baseUrl = 'https://www.thedailystar.net/'
+    let url = slug ? `https://www.thedailystar.net/${slug}` : `https://www.thedailystar.net/news/bangladesh`
     try {
         const browser = await puppeteer.launch({
             headless: true,
@@ -30,7 +30,7 @@ const fetchTheDailyStarHeadlines = async (slug) => {
 
         const page = await browser.newPage();
 
-        await page.goto(`${baseUrl}${slug}`, {
+        await page.goto(url, {
             waitUntil: 'networkidle2',
         });
 
@@ -59,7 +59,7 @@ const fetchTheDailyStarHeadlines = async (slug) => {
 
 
 const fetchTheIndependentHeadlines = async (slug) => {
-    let baseUrl = slug ? `https://theindependentbd.com/online/${slug}` : `https://theindependentbd.com/online/bangladesh`
+    let url = slug ? `https://theindependentbd.com/online/${slug}` : `https://theindependentbd.com/online/bangladesh`
     try {
         const browser = await puppeteer.launch({
             headless: true,
@@ -67,7 +67,7 @@ const fetchTheIndependentHeadlines = async (slug) => {
 
         const page = await browser.newPage();
 
-        await page.goto(baseUrl, {
+        await page.goto(url, {
             waitUntil: 'networkidle2',
         });
 

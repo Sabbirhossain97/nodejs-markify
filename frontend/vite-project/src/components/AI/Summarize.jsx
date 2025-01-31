@@ -12,7 +12,7 @@ function Summarize() {
     return (
         <div className='min-h-screen max-w-7xl mx-auto flex flex-col pt-20 text-3xl text-zinc-400 w-full'>
             <Link to={"/"}>
-                <button className='cursor-pointer w-[250px] inline-flex justify-center px-4 whitespace-nowrap items-center gap-2 transition duration-300 border hover:bg-zinc-700 text-zinc-300 bg-zinc-800 border-zinc-600 rounded-md text-lg mb-10 py-2'>
+                <button className='cursor-pointer w-[250px] inline-flex justify-center px-4 whitespace-nowrap items-center gap-2 transition duration-300 border hover:bg-zinc-900/30 text-zinc-300 border-zinc-700/60 rounded-md text-lg mb-10 py-2'>
                     <MdKeyboardBackspace />
                     Back to headlines
                 </button>
