@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Hero from './components/Hero'
+import Main from './components/Main';
+import Home from "./components/Home/index"
 import Navbar from './components/Navbar/Navbar'
 import Summarize from './components/AI/Summarize';
 
@@ -13,7 +14,12 @@ function App() {
           <Route
             exact
             path="/"
-            element={<Hero />}
+            element={<Home />}
+          />
+          <Route
+            exact
+            path="/headlines"
+            element={<Main />}
           />
           <Route
             exact

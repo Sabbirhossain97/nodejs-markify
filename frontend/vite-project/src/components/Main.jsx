@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { FaLink } from "react-icons/fa";
 import { baseUrl } from "../../helpers/config";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import { newspapers } from "../../helpers/newspapers";
@@ -8,8 +7,9 @@ import { RiGeminiFill } from "react-icons/ri";
 import { useNavigate } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { HeadlineCardSkeleton } from "./Skeleton";
+import { FaInbox } from "react-icons/fa";
 
-function Hero() {
+function Main() {
     const navigate = useNavigate();
     const [newsName, setNewsName] = useState({
         name: 'The Daily Star',
@@ -66,7 +66,9 @@ function Hero() {
                 }).then((response) => {
                     const { newsPaperName, headline, content } = response?.data;
                     const data = { newsPaperName: newsPaperName, newsHeadline: headline, summarizedNews: content };
-                    navigate('/summarize', { state: data });
+                    if (data) {
+                        navigate('/summarize', { state: data });
+                    }
                 }).catch((error) => {
                     console.error("Error fetching data:", error);
                 })
@@ -116,7 +118,7 @@ function Hero() {
                                         <HeadlineCardSkeleton key={index} />
                                     ))
                                     :
-                                    headlines && headlines.list && headlines.list.map((item, index) => (
+                                    headlines?.list?.length > 0 ? headlines?.list?.map((item, index) => (
                                         <div key={index} className="col-span-2 lg:col-span-1 group">
                                             <div
                                                 className="flex py-4 flex-col sm:flex-row rounded-xl overflow-hidden border transition duration-300 group-hover:bg-zinc-900/30 border-zinc-700/60"
@@ -140,7 +142,14 @@ function Hero() {
                                                 </div>
                                             </div>
                                         </div>
-                                    ))}
+                                    )) :
+                                        <div className='flex col-span-3 justify-center py-10 dark:text-gray-400 px-2 font-medium border-zinc-300 dark:border-zinc-700'>
+                                            <div className='flex flex-col items-center justify-center'>
+                                                <FaInbox className='text-9xl text-blue-500 dark:text-teal-500' />
+                                                <p className='text-zinc-400 text-xl'>No Data</p>
+                                            </div>
+                                        </div>
+                                }
                             </div>
                         </TabPanel>
                     ))}
@@ -162,4 +171,4 @@ function Hero() {
     )
 }
 
-export default Hero
+export default Main

@@ -1,8 +1,8 @@
 import express from 'express'
 import puppeteer from 'puppeteer';
 import cors from 'cors';
-import 'dotenv/config';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import 'dotenv/config';
 
 const app = express();
 app.use(express.json());
@@ -17,7 +17,7 @@ const generateAIContent = async (prompt) => {
         const result = await model.generateContent(generateSummary);
         return result.response.text()
     } catch (error) {
-        console.error("Error generating image:", error);
+        console.error("Error generating summary:", error);
     }
 }
 
@@ -250,7 +250,6 @@ app.post("/summarize", async (req, res) => {
     const { newsPaperName, headline, headlineLink } = req.body;
     const content = await generateAIContent(headlineLink);
     res.json({ newsPaperName: newsPaperName, headline: headline, content: content });
-
 })
 
 app.listen(3000, () => {
