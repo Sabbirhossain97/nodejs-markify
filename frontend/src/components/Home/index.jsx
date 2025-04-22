@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import axios from 'axios';
-import { baseUrl } from '../../../helpers/config';
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { markdownTabs, renderedTabs } from '../../../helpers/config';
+import { handleConvert, handleHTMLDownload, handleFileChange } from '../../utils/markdownHandlers';
 
 function index() {
 
@@ -16,67 +15,6 @@ function index() {
 
     const handleMarkdownChange = (e) => {
         setMarkdown(e.target.value);
-    }
-
-    const handleConvert = async () => {
-        if (!markdown) {
-            alert('Please enter some markdown content');
-            return;
-        }
-        setConvertLoading(true);
-        try {
-            const response = await axios.post(`${baseUrl}/convert`, { markdown });
-            setTimeout(() => {
-                setHtml(response.data.html);
-                setConvertLoading(false);
-            }, 1500)
-        } catch (error) {
-            console.error('Error converting markdown to HTML:', error);
-            alert('Error converting markdown to HTML. Please try again.');
-            setConvertLoading(false);
-        }
-    }
-
-
-    const handleHTMLDownload = () => {
-        const blob = new Blob(
-            [
-                `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Converted Markdown</title>
-</head>
-<body>
-<style>${css}</style>
-${html}
-</body>
-</html>`
-            ],
-            { type: 'text/html' }
-        );
-
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'converted.html';
-        a.click();
-        URL.revokeObjectURL(url);
-    };
-
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setUploadLoading(true);
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                setTimeout(() => {
-                    setMarkdown(event.target.result);
-                    setUploadLoading(false);
-                }, 1500);
-            }
-            reader.readAsText(file);
-        }
     }
 
     return (
@@ -122,7 +60,7 @@ ${html}
                 </TabGroup>
                 <br />
                 <div className="flex flex-col mb-16 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
-                    <button onClick={handleConvert} type='button' disabled={convertLoading} className="cursor-pointer inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-zinc-700 hover:bg-zinc-600 transition duration-300">
+                    <button onClick={() => handleConvert(markdown, setHtml, setConvertLoading)} type='button' disabled={convertLoading} className="cursor-pointer inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-zinc-700 hover:bg-zinc-600 transition duration-300">
                         {convertLoading ? <>
                             <div className='flex items-center gap-2'>
                                 <div role="status">
@@ -146,7 +84,7 @@ ${html}
                                 </div> Uploading...
                             </div>
                         </> : 'Upload File'}
-                        <input type="file" id='uploadFile' accept=".md" onChange={handleFileChange} className="hidden" />
+                        <input type="file" id='uploadFile' accept=".md" onChange={(e) => handleFileChange(e, setMarkdown, setUploadLoading)} className="hidden" />
                     </label>
                 </div>
 
@@ -172,7 +110,7 @@ ${html}
                                                 className="prose prose-neutral max-w-none"
                                                 dangerouslySetInnerHTML={{ __html: html }} />
                                             <button
-                                                onClick={handleHTMLDownload}
+                                                onClick={() => handleHTMLDownload(html, css)}
                                                 className="absolute top-4 right-4 cursor-pointer inline-flex justify-center items-center py-2 px-2 text-sm font-medium text-center text-white rounded-lg bg-zinc-700 hover:bg-zinc-600 transition duration-300"
                                             >
                                                 Download HTML

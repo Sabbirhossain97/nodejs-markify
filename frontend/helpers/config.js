@@ -9,7 +9,7 @@ export const markdownTabs = [
     },
 ]
 
-const renderedTabs = [
+export const renderedTabs = [
     {
         name: 'Preview',
     },
