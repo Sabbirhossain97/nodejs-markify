@@ -3,6 +3,7 @@ import axios from 'axios';
 import { baseUrl } from '../../../helpers/config';
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { markdownTabs, renderedTabs } from '../../../helpers/config';
 
 function index() {
 
@@ -36,25 +37,8 @@ function index() {
         }
     }
 
-    const markdownTabs = [
-        {
-            name: 'Markdown',
-        },
-        {
-            name: 'Custom CSS',
-        },
-    ]
 
-    const rendered = [
-        {
-            name: 'Preview',
-        },
-        {
-            name: 'Raw HTML',
-        },
-    ]
-
-    const handleDownload = () => {
+    const handleHTMLDownload = () => {
         const blob = new Blob(
             [
                 `<!DOCTYPE html>
@@ -110,15 +94,15 @@ ${html}
                             </Tab>
                         ))}
                     </TabList>
-                    <TabPanels className="mt-3">
+                    <TabPanels>
                         {markdownTabs.map(({ name }) => (
-                            <TabPanel key={name} className="rounded-xl p-3">
+                            <TabPanel key={name} className="rounded-xl">
                                 {name === 'Markdown' ? (
                                     <textarea
                                         value={markdown}
                                         onChange={handleMarkdownChange}
                                         placeholder="Enter Markdown here..."
-                                        className='border border-zinc-300 rounded-md w-full mt-6 p-4'
+                                        className='border bg-white border-zinc-300 rounded-md w-full mt-4 p-4'
                                         rows="10"
                                         cols="50"
                                     />
@@ -127,7 +111,7 @@ ${html}
                                         value={css}
                                         onChange={(e) => setCss(e.target.value)}
                                         placeholder="Add your custom CSS here..."
-                                        className="border border-zinc-300 rounded-md w-full mt-6 p-4"
+                                        className="border bg-white border-zinc-300 rounded-md w-full mt-4 p-4"
                                         rows="10"
                                         cols="50"
                                     />
@@ -136,9 +120,8 @@ ${html}
                         ))}
                     </TabPanels>
                 </TabGroup>
-
                 <br />
-                <div className="flex mt-6 flex-col mb-8 lg:mb-16 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
+                <div className="flex flex-col mb-16 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
                     <button onClick={handleConvert} type='button' disabled={convertLoading} className="cursor-pointer inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-zinc-700 hover:bg-zinc-600 transition duration-300">
                         {convertLoading ? <>
                             <div className='flex items-center gap-2'>
@@ -170,7 +153,7 @@ ${html}
                 {html && <div className="w-full">
                     <TabGroup>
                         <TabList className="flex gap-4">
-                            {rendered.map(({ name }) => (
+                            {renderedTabs.map(({ name }) => (
                                 <Tab
                                     key={name}
                                     className="cursor-pointer rounded-full py-1 px-3 text-sm/6 font-semibold bg-zinc-200 text-zinc-700 focus:outline-none data-[selected]:bg-zinc-700 data-[selected]:text-white data-[hover]:bg-zinc-800 data-[hover]:text-white data-[selected]:data-[hover]:bg-zinc-700 data-[focus]:outline-1 data-[focus]:outline-white"
@@ -180,16 +163,16 @@ ${html}
                             ))}
                         </TabList>
                         <TabPanels className="mt-3">
-                            {rendered.map(({ name }) => (
-                                <TabPanel key={name} className="rounded-xl p-3">
+                            {renderedTabs.map(({ name }) => (
+                                <TabPanel key={name} className="rounded-xl">
                                     {name === 'Preview' ? (
-                                        <div className='border border-zinc-300 rounded-md p-4 relative'>
+                                        <div className='border bg-white border-zinc-300 rounded-md p-4 relative'>
                                             <style>{css}</style>
                                             <div
                                                 className="prose prose-neutral max-w-none"
                                                 dangerouslySetInnerHTML={{ __html: html }} />
                                             <button
-                                                onClick={handleDownload}
+                                                onClick={handleHTMLDownload}
                                                 className="absolute top-4 right-4 cursor-pointer inline-flex justify-center items-center py-2 px-2 text-sm font-medium text-center text-white rounded-lg bg-zinc-700 hover:bg-zinc-600 transition duration-300"
                                             >
                                                 Download HTML
