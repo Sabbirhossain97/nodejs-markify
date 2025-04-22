@@ -1,14 +1,14 @@
 # Node.js Markify 📝
 
-A simple Node.js CLI tool to convert Markdown files to clean, styled HTML pages. Ideal for quickly previewing your markdown content in the browser.
+A simple Node.js tool to convert Markdown files to clean, styled HTML pages. Ideal for quickly previewing your markdown content in the browser.
 
 ## Features 🚀
 
-- Converts `.md` files to `.html`
-- custom css 
-- Includes minimal, readable styling
-- CLI-based usage
-- Fast and lightweight
+- Upload .md files or paste Markdown directly
+- Convert Markdown to HTML instantly
+- Custom CSS for clean and readable design
+- View raw HTML output
+- Download the generated HTML file
 
 ## Installation ⚙️
 
