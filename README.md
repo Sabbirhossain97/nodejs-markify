@@ -5,6 +5,7 @@ A simple Node.js CLI tool to convert Markdown files to clean, styled HTML pages.
 ## Features 🚀
 
 - Converts `.md` files to `.html`
+- custom css 
 - Includes minimal, readable styling
 - CLI-based usage
 - Fast and lightweight
