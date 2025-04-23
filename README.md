@@ -6,7 +6,7 @@ A simple Node.js tool to convert Markdown files to clean, styled HTML pages. Ide
 
 - Upload .md files or paste Markdown directly
 - Convert Markdown to HTML instantly
-- Custom CSS for clean and readable design
+- Custom CSS for a clean and readable design
 - View raw HTML output
 - Download the generated HTML file
   
