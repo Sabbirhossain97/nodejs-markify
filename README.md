@@ -9,6 +9,23 @@ A simple Node.js tool to convert Markdown files to clean, styled HTML pages. Ide
 - Custom CSS for clean and readable design
 - View raw HTML output
 - Download the generated HTML file
+  
+## ⚙️ Tech Stack
+
+### Frontend
+
+- React.js
+- Tailwind CSS V4
+- Vite
+- Vercel (Hosting)
+
+### Backend
+
+- Node.js
+- Express.js
+- Render (Hosting)
+
+---
 
 ## Installation ⚙️
 
